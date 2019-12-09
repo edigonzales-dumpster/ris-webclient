@@ -1,7 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module>
   <inherits name="com.google.gwt.user.User" />
-  <inherits name="com.google.gwt.user.theme.clean.Clean" />
+  <!-- <inherits name="com.google.gwt.user.theme.clean.Clean" />  -->
+  
+  <inherits name="com.google.gwt.json.JSON" />
+  <inherits name="com.google.gwt.i18n.I18N"/>
+      
+  <inherits name="org.dominokit.domino.ui.DominoUI"/>
+  <!--<inherits name='org.dominokit.addons.ol.OLMapAddon'/>-->
+  
+
+  <inherits name="ol.GwtOL"/>
+  <inherits name="proj4.GwtProj4"/>
+
+  <extend-property name="locale" values="de_CH"/>
+  <set-property name="locale" value="de_CH" />
 
   <source path="" />
 

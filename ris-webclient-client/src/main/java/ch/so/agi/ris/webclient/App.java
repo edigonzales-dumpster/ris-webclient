@@ -2,6 +2,8 @@ package ch.so.agi.ris.webclient;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Document;
+import com.google.gwt.dom.client.Text;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
@@ -16,6 +18,51 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
+
+import elemental2.dom.CSSProperties;
+import elemental2.dom.HTMLDivElement;
+import elemental2.dom.HTMLElement;
+import ol.Collection;
+import ol.Coordinate;
+import ol.Extent;
+import ol.Map;
+import ol.MapOptions;
+import ol.OLFactory;
+import ol.View;
+import ol.ViewOptions;
+import ol.control.Control;
+import ol.control.Rotate;
+import ol.control.ScaleLine;
+import ol.control.Zoom;
+import ol.interaction.KeyboardPan;
+import ol.interaction.KeyboardZoom;
+import ol.layer.Image;
+import ol.layer.LayerOptions;
+import ol.layer.Tile;
+import ol.proj.Projection;
+import ol.proj.ProjectionOptions;
+import ol.source.ImageWms;
+import ol.source.ImageWmsOptions;
+import ol.source.ImageWmsParams;
+import ol.source.Osm;
+import ol.source.Wmts;
+import ol.source.WmtsOptions;
+import ol.source.XyzOptions;
+import ol.tilegrid.TileGrid;
+import ol.tilegrid.WmtsTileGrid;
+import ol.tilegrid.WmtsTileGridOptions;
+import proj4.Proj4;
+
+import org.dominokit.addons.ol.presets.MapPresets;
+import org.dominokit.addons.ol.ui.MapCard;
+import org.dominokit.addons.ol.ui.MapView;
+import org.dominokit.domino.ui.cards.Card;
+import org.dominokit.domino.ui.grid.Column;
+import org.dominokit.domino.ui.grid.Row;
+import org.dominokit.domino.ui.utils.DominoElement;
+import org.dominokit.domino.ui.utils.TextNode;
+import org.jboss.gwt.elemento.core.Elements;
+
 
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
@@ -40,9 +87,102 @@ public class App implements EntryPoint {
 	 */
 	public void onModuleLoad() {
 	    
-	    
 	    GWT.log("Hallo Welt.");
+
+//        HTMLElement controlsCard = Card.create().setId("controls").setWidth("500px")
+//                .appendChild(TextNode.of("Hallo Stefan.")).asElement();
+//        controlsCard.style.margin = CSSProperties.MarginUnionType.of("20px");
+        
+        Elements.body().style("background-color: DEEPSKYBLUE;");
+//        Elements.body().add(controlsCard);
+
+
+        DominoElement<HTMLDivElement> el = DominoElement.div().setId("fubar").setWidth("500px").setHeight("500px"); 
+        
+//        MapView mapView = new MapView(map.getTarget());
+//        Elements.body().add(mapCard.asElement());
+        
+//        Elements.body().add(DominoElement.div()
+//        .appendChild(Row.create()
+//                .addColumn(Column.span8()
+//                        .offset2()
+//                        .appendChild(mapView)
+//                )).asElement());
+
+        
+        
+//        Proj4.defs("EPSG:2056",
+//                "+proj=somerc +lat_0=46.95240555555556 +lon_0=7.439583333333333 +k_0=1 +x_0=2600000 +y_0=1200000 +ellps=bessel +towgs84=674.374,15.056,405.346,0,0,0,0 +units=m +no_defs");
+
+        ProjectionOptions projectionOptions = OLFactory.createOptions();
+        projectionOptions.setCode("EPSG:2056");
+        projectionOptions.setUnits("m");
+        projectionOptions.setExtent(new Extent(2420000, 1030000, 2900000, 1350000));
+
+        Projection projection = new Projection(projectionOptions);
+
+        WmtsOptions wmtsOptions = OLFactory.createOptions();
+        wmtsOptions.setUrl("https://geo.so.ch/api/wmts/1.0.0/{Layer}/default/2056/{TileMatrix}/{TileRow}/{TileCol}");
+        wmtsOptions.setLayer("ch.so.agi.hintergrundkarte_sw");
+        wmtsOptions.setRequestEncoding("REST");
+        wmtsOptions.setFormat("image/png");
+        wmtsOptions.setMatrixSet("EPSG:2056");
+        wmtsOptions.setStyle("default");
+        wmtsOptions.setProjection(projection);
+        wmtsOptions.setWrapX(true);
+        wmtsOptions.setTileGrid(this.createWmtsTileGrid(projection));
+
+        Wmts wmtsSource = new Wmts(wmtsOptions);
+
+        LayerOptions wmtsLayerOptions = OLFactory.createOptions();
+        wmtsLayerOptions.setSource(wmtsSource);
+
+        Tile wmtsLayer = new Tile(wmtsLayerOptions);
+        wmtsLayer.setOpacity(1.0);
+
+        // create a view
+        ViewOptions viewOptions = OLFactory.createOptions();
+        viewOptions.setProjection(projection);
+        viewOptions.setResolutions(new double[] { 4000.0, 2000.0, 1000.0, 500.0, 250.0, 100.0, 50.0, 20.0, 10.0, 5.0,
+                2.5, 1.0, 0.5, 0.25, 0.1 });
+        View view = new View(viewOptions);
+
+        Coordinate centerCoordinate = new Coordinate(2616491, 1240287);
+
+        view.setCenter(centerCoordinate);
+        view.setZoom(6);
+
+        // create the map
+        MapOptions mapOptions = OLFactory.createOptions();
+        mapOptions.setTarget("fubar");
+        mapOptions.setView(view);
+        mapOptions.setControls(new Collection<Control>());
+
+        Map map = new Map(mapOptions);
+
+        // add layers
+        map.addLayer(wmtsLayer);
+        
+        
+        
+//        ol.Map map = MapPresets.getOsmMap("fubar");
+//        GWT.log(map.getTarget());
+//        GWT.log(String.valueOf(map.getLayers().getLength()));
+
+        Elements.body().add(el);
+
+        
+        
+//        Card card = new Card();
+//        card.getBody().setId("fubar");
+//        card.setInnerHtml("Hallo Fubar");
+//        Elements.body().add(card);
+
+        
 	    
+//        Text textNode = Document.get().createTextNode("Hello World!");
+//        RootPanel.getBodyElement().appendChild(textNode);
+
 	    
 //		final Button sendButton = new Button("Send");
 //		final TextBox nameField = new TextBox();
@@ -160,4 +300,24 @@ public class App implements EntryPoint {
 //		sendButton.addClickHandler(handler);
 //		nameField.addKeyUpHandler(handler);
 	}
+	
+    private TileGrid createWmtsTileGrid(Projection projection) {
+        WmtsTileGridOptions wmtsTileGridOptions = OLFactory.createOptions();
+
+        double resolutions[] = new double[] { 4000.0, 2000.0, 1000.0, 500.0, 250.0, 100.0, 50.0, 20.0, 10.0, 5.0, 2.5,
+                1.0, 0.5, 0.25, 0.1 };
+        String[] matrixIds = new String[resolutions.length];
+
+        for (int z = 0; z < resolutions.length; ++z) {
+            matrixIds[z] = String.valueOf(z);
+        }
+
+        Coordinate tileGridOrigin = projection.getExtent().getTopLeft();
+        wmtsTileGridOptions.setOrigin(tileGridOrigin);
+        wmtsTileGridOptions.setResolutions(resolutions);
+        wmtsTileGridOptions.setMatrixIds(matrixIds);
+
+        return new WmtsTileGrid(wmtsTileGridOptions);
+    }
+	
 }
