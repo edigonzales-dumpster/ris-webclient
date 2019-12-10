@@ -8,10 +8,6 @@
       
   <inherits name="org.dominokit.domino.ui.DominoUI"/>
   <!--<inherits name='org.dominokit.addons.ol.OLMapAddon'/>-->
-  <!-- 
-    <inherits name="gwt.material.design.GwtMaterialDesignBasic"/>
-    <inherits name="gwt.material.design.themes.ThemeRed"/>
- -->
  
   <inherits name="ol.GwtOL"/>
   <inherits name="proj4.GwtProj4"/>
