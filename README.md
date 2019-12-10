@@ -17,3 +17,4 @@ mvn jetty:run -pl *-server -am -Denv=dev
 ```
 
 see: https://github.com/tbroyer/gwt-maven-archetypes/
+
