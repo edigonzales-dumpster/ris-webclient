@@ -87,8 +87,8 @@
       </plugins>
     </pluginManagement>
   </build>
-<modules>  
-  <module>ris-webclient-client</module>
+  <modules>  
+    <module>ris-webclient-client</module>
     <module>ris-webclient-shared</module>
     <module>ris-webclient-server</module>
   </modules>
